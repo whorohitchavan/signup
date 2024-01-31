@@ -27,12 +27,22 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       // Validate passwords match
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!passwordRegex.test(formData.password)) {
+        throw new Error(
+          "Requires at least one lowercase letter,uppercase letter, special character, and number."
+        );
+      }
       if (formData.password !== formData.cpassword) {
         throw new Error("Passwords do not match");
       }
-
+      const nameRegex = /^[A-Za-z]+$/;
+      if (!nameRegex.test(formData.fname) || !nameRegex.test(formData.lname)) {
+        throw new Error("Only alphabets are allowed for First Name and Last Name.");
+      }
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -70,15 +80,19 @@ const SignUp = () => {
   return (
     <>
       <div className="grid sm:grid-cols-2 ">
-        <div className="col-span-full fixed overflow-x-hidden w-screen z-10 sm:text-white flex items-center justify-between py-2 sm:px-24 px-2">
+        <div className="col-span-full absolute overflow-x-hidden w-screen z-10 sm:text-white flex items-center justify-between py-2 sm:px-24 px-2">
           <div>
-            <img src={logo.src} alt="" className="object-cover h-20" />
+            <a href="#">
+              <img src={logo.src} alt="" className="object-cover h-20" />
+            </a>
           </div>
-          <div className="flex items-center">
-            <HiOutlineChevronLeft className="me-2 cursor-pointer" /> Back to Home
+          <div className="">
+            <a href="#" className="flex items-center">
+              <HiOutlineChevronLeft className="me-2 cursor-pointer" /> Back to Home
+            </a>
           </div>
         </div>
-        <div className="h-screen grid  justify-center">
+        <div className="h-screen grid justify-center">
           <div className="mt-32">
             <h1 className="text-3xl font-bold mb-6">Sign up</h1>
             <form className="flex flex-col gap-4 md:w-96" onSubmit={handleSubmit}>
@@ -159,7 +173,9 @@ const SignUp = () => {
                   </Label>
                 </div>
                 <div>
-                  <Label className="flex">Forget Password</Label>
+                  <Label className="flex">
+                    <a href="#">Forget Password</a>
+                  </Label>
                 </div>
               </div>
               <div className="mt-5">
